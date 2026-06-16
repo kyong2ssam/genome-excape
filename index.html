@@ -141,8 +141,8 @@
         .map-node.current::after { content: '📍'; position: absolute; font-size: 1.5rem; }
 
         /* Stage Screen */
-        #stage-screen { max-width: 1200px; margin: 0 auto; width: 100%; display: none; grid-template-columns: 1fr 2fr 1fr; gap: 20px; }
-        @media (max-width: 1023px) { #stage-screen { grid-template-columns: 1fr; } }
+        #stage-screen { max-width: 1200px; margin: 0 auto; width: 100%; grid-template-columns: 1fr 2fr 1fr; gap: 20px; }
+        #stage-screen.active { display: grid; }
         
         .story-panel { font-size: 1.1rem; line-height: 1.6; word-break: keep-all; }
         .game-area { display: flex; flex-direction: column; align-items: center; gap: 20px; }
