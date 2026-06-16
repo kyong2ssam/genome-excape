@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>생명공학 연구소 방탈출: GENOME-X</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap');
@@ -32,6 +32,7 @@
             flex-direction: column;
             min-height: 100vh;
             user-select: none;
+            -webkit-user-select: none; /* 모바일 텍스트 드래그 방지 */
         }
 
         /* Background Effects */
@@ -64,6 +65,7 @@
             cursor: pointer;
             transition: all 0.2s;
             border-radius: 3px;
+            touch-action: manipulation; /* 모바일 더블탭 줌 방지 */
         }
         button:hover:not(:disabled) {
             background: var(--color-green);
@@ -93,7 +95,7 @@
 
         /* Intro Screen */
         #intro-screen { justify-content: center; align-items: center; text-align: center; }
-        #intro-text { font-family: var(--font-mono); font-size: 1.2rem; line-height: 1.6; margin-bottom: 30px; text-align: left; max-width: 600px; min-height: 250px; }
+        #intro-text { font-family: var(--font-mono); font-size: 1.2rem; line-height: 1.6; margin-bottom: 30px; text-align: left; max-width: 600px; min-height: 250px; word-break: keep-all; }
         .typing-cursor::after { content: '█'; animation: blink 1s step-end infinite; }
 
         /* Status Bar */
@@ -119,6 +121,7 @@
             gap: 20px;
             max-width: 800px;
             margin-top: 40px;
+            width: 100%;
         }
         .map-node {
             width: 80px; height: 80px;
@@ -129,6 +132,7 @@
             cursor: not-allowed;
             color: var(--text-dim);
             position: relative;
+            margin: 0 auto;
         }
         .map-node.cleared { border-color: var(--color-green); color: var(--color-green); cursor: pointer; }
         .map-node.current { border-color: var(--color-amber); color: var(--color-amber); cursor: pointer; animation: pulseAmber 2s infinite; }
@@ -140,15 +144,15 @@
         #stage-screen { max-width: 1200px; margin: 0 auto; width: 100%; display: none; grid-template-columns: 1fr 2fr 1fr; gap: 20px; }
         @media (max-width: 1023px) { #stage-screen { grid-template-columns: 1fr; } }
         
-        .story-panel { font-size: 1.1rem; line-height: 1.6; }
-        .game-area { display: flex; flex-direction: column; align-items: center; gap: 30px; }
-        .tools-area { display: flex; flex-direction: column; gap: 15px; }
+        .story-panel { font-size: 1.1rem; line-height: 1.6; word-break: keep-all; }
+        .game-area { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .tools-area { display: flex; flex-direction: column; gap: 10px; }
 
-        .sequence-container { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 20px;}
+        .sequence-container { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 15px;}
         .codon-card {
             background: rgba(0,0,0,0.8); border: 1px solid var(--color-blue);
-            padding: 15px 10px; border-radius: 5px; text-align: center;
-            font-family: var(--font-mono); font-size: 1.5rem; min-width: 60px;
+            padding: 12px 8px; border-radius: 5px; text-align: center;
+            font-family: var(--font-mono); font-size: 1.3rem; min-width: 55px;
             box-shadow: 0 0 10px rgba(0, 204, 255, 0.2);
             color: var(--color-blue);
         }
@@ -157,19 +161,20 @@
         
         .input-group { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; }
         .char-input {
-            width: 50px; height: 60px;
+            width: 45px; height: 55px;
             background: #000; border: 1px solid var(--border);
             color: var(--color-green); font-size: 1.5rem;
             text-align: center; font-family: var(--font-main);
             outline: none;
+            border-radius: 4px;
         }
-        .char-input:focus { box-shadow: 0 0 10px var(--color-green); }
+        .char-input:focus { box-shadow: 0 0 10px var(--color-green); background: rgba(0, 255, 65, 0.1); }
         
         .transcription-group { display: flex; flex-direction: column; align-items: center; gap: 10px; border: 1px dashed var(--text-dim); padding: 15px; border-radius: 5px; width: 100%;}
         
         /* Custom Keyboard */
-        #virtual-keyboard { display: none; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 20px; background: rgba(0,0,0,0.8); padding: 10px; border: 1px solid var(--border); }
-        .key-btn { padding: 10px 0; font-size: 1.2rem; }
+        #virtual-keyboard { display: none; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 15px; background: rgba(0,0,0,0.8); padding: 10px; border: 1px solid var(--border); border-radius: 5px; width: 100%; max-width: 500px; }
+        .key-btn { padding: 12px 0; font-size: 1.2rem; font-weight: bold; border-radius: 4px; background: #111; }
 
         /* Popups */
         .overlay {
@@ -177,28 +182,29 @@
             background: rgba(0, 0, 0, 0.85);
             display: none; justify-content: center; align-items: center;
             z-index: 1000; backdrop-filter: blur(3px);
+            padding: 15px;
         }
         .popup {
             background: var(--bg-panel); border: 2px solid var(--border);
-            box-shadow: 0 0 20px var(--border); padding: 30px;
-            border-radius: 8px; max-width: 600px; width: 90%;
+            box-shadow: 0 0 20px var(--border); padding: 25px;
+            border-radius: 8px; max-width: 600px; width: 100%;
             position: relative; animation: slideUp 0.3s ease-out;
+            max-height: 90vh; overflow-y: auto;
         }
-        .popup-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; color: var(--text-dim); cursor: pointer; padding: 0; }
+        .popup-close { position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 1.5rem; color: var(--text-dim); cursor: pointer; padding: 5px 10px; box-shadow: none; }
         .popup-close:hover { color: var(--color-green); background: none; box-shadow: none; }
         
         .codon-table-grid {
             display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 15px;
-            font-family: var(--font-mono); font-size: 0.9rem; max-height: 60vh; overflow-y: auto;
+            font-family: var(--font-mono); font-size: 0.9rem;
         }
-        .codon-item { background: #000; border: 1px solid var(--text-dim); padding: 5px; text-align: center; }
-        @media (max-width: 600px) { .codon-table-grid { grid-template-columns: repeat(2, 1fr); } }
+        .codon-item { background: #000; border: 1px solid var(--text-dim); padding: 6px; text-align: center; border-radius: 3px; }
 
         /* Animations */
         @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
         @keyframes blinkRed { 0%, 50% { color: var(--color-red); text-shadow: 0 0 10px var(--color-red); } 51%, 100% { color: #880000; text-shadow: none; } }
         @keyframes pulseAmber { 0% { box-shadow: 0 0 0 0 rgba(255, 170, 0, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(255, 170, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 170, 0, 0); } }
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes glitch { 
             0% { transform: translate(0); }
             20% { transform: translate(-2px, 2px); }
@@ -219,8 +225,54 @@
             font-size: 100px; opacity: 0; transition: all 0.5s;
         }
         .zombie-attack .zombie-hands { bottom: -20px; opacity: 0.8; animation: glitch 0.3s infinite; }
-        .zombie-attack #danger-overlay { border-width: 20px; box-shadow: inset 0 0 50px var(--color-red); background: rgba(255,0,0,0.1); }
+        .zombie-attack #danger-overlay { border-width: 15px; box-shadow: inset 0 0 50px var(--color-red); background: rgba(255,0,0,0.1); }
 
+        /* =========================================
+           📱 모바일 전용 최적화 (Mobile Responsive)
+           ========================================= */
+        @media (max-width: 767px) {
+            body { font-size: 0.95rem; }
+            .screen { padding: 10px; }
+            .panel { padding: 15px; }
+            
+            #intro-text { font-size: 1rem; min-height: 200px; }
+            
+            /* 상태바 최적화 (2줄로 분리) */
+            #status-bar { flex-direction: column; gap: 5px; padding: 8px; font-size: 0.9rem; text-align: center; }
+            
+            /* 맵 그리드 최적화 (모바일은 3열) */
+            .map-grid { grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
+            .map-node { width: 65px; height: 65px; font-size: 1rem; }
+            .map-node.locked::after, .map-node.cleared::after, .map-node.current::after { font-size: 1.2rem; }
+            
+            /* 게임 화면 카드 및 입력창 최적화 */
+            .codon-card { padding: 10px 6px; font-size: 1.1rem; min-width: 45px; }
+            .char-input { width: 36px; height: 46px; font-size: 1.3rem; }
+            
+            /* 가상 키보드 최적화 (모바일은 5열, 버튼 크게) */
+            #virtual-keyboard { grid-template-columns: repeat(5, 1fr); gap: 4px; padding: 8px; }
+            .key-btn { padding: 15px 0; font-size: 1.1rem; }
+            
+            /* 코돈표 팝업 최적화 */
+            .codon-table-grid { grid-template-columns: repeat(2, 1fr); gap: 4px; }
+            .popup { padding: 20px 15px; }
+            
+            /* 우측 툴바 버튼을 모바일에서는 가로로 배치 */
+            .tools-area { flex-direction: row; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+            .tools-area button { flex: 1 1 45%; min-width: 130px; font-size: 0.9rem; padding: 10px 5px; }
+            #hint-display { width: 100%; text-align: center; }
+            
+            /* 보스 스테이지 여백 조정 */
+            #boss-area { gap: 10px; }
+            #boss-area .sequence-container { margin-bottom: 5px; }
+        }
+
+        /* 아이폰 등 아주 작은 화면(SE 등) 추가 최적화 */
+        @media (max-width: 380px) {
+            .char-input { width: 32px; height: 42px; font-size: 1.1rem; }
+            .map-grid { gap: 10px; }
+            .map-node { width: 55px; height: 55px; }
+        }
     </style>
 </head>
 <body>
@@ -235,16 +287,16 @@
 
     <div id="intro-screen" class="screen active">
         <div class="panel">
-            <h1 style="color: var(--color-red); margin-bottom: 20px; font-family: var(--font-mono);">SYSTEM TERMINAL</h1>
+            <h1 style="color: var(--color-red); margin-bottom: 20px; font-family: var(--font-mono); font-size: 1.8rem;">SYSTEM TERMINAL</h1>
             <div id="intro-text" class="typing-cursor"></div>
-            <button id="btn-start" style="display: none; margin-top: 20px; font-size: 1.2rem; width: 200px;">시스템 접속</button>
+            <button id="btn-start" style="display: none; margin-top: 20px; font-size: 1.2rem; width: 100%; max-width: 250px; padding: 15px;">시스템 접속</button>
         </div>
     </div>
 
     <div id="map-screen" class="screen">
         <div class="panel" style="text-align: center;">
-            <h2>연구소 평면도</h2>
-            <p style="color: var(--text-dim); margin-top: 10px;">안전 구역을 확보하여 백신 합성실(10구역)까지 도달하십시오.</p>
+            <h2 style="font-size: 1.5rem;">연구소 평면도</h2>
+            <p style="color: var(--text-dim); margin-top: 10px; font-size: 0.9rem;">안전 구역을 확보하여 백신 합성실(10구역)까지 도달하십시오.</p>
             <div class="map-grid" id="map-grid">
                 </div>
         </div>
@@ -252,47 +304,49 @@
 
     <div id="stage-screen" class="screen" style="display: none;">
         <div class="panel story-panel">
-            <h3 id="st-title" style="color: var(--color-amber); border-bottom: 1px solid var(--text-dim); padding-bottom: 10px; margin-bottom: 15px;"></h3>
-            <p id="st-desc"></p>
+            <h3 id="st-title" style="color: var(--color-amber); border-bottom: 1px solid var(--text-dim); padding-bottom: 10px; margin-bottom: 15px; font-size: 1.2rem;"></h3>
+            <p id="st-desc" style="font-size: 1rem;"></p>
         </div>
 
         <div class="panel game-area">
             <div id="s5-selector" style="display: none; width: 100%; text-align: center;">
-                <p style="margin-bottom: 15px; color: var(--color-amber);">⚠ 데이터 식별 필요: 아래 서열의 종류를 판별하십시오.</p>
+                <p style="margin-bottom: 15px; color: var(--color-amber); word-break: keep-all; font-size:0.95rem;">⚠ 데이터 식별 필요: 아래 서열의 종류를 판별하십시오.</p>
                 <div class="sequence-container" id="s5-seq-display"></div>
-                <button onclick="checkS5Type('DNA')" style="border-color: var(--color-amber); color: var(--color-amber);">[🔵 DNA 주형 가닥]</button>
-                <button onclick="checkS5Type('RNA')" style="border-color: var(--color-blue); color: var(--color-blue);">[🟢 전사된 RNA 서열]</button>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <button onclick="checkS5Type('DNA')" style="border-color: var(--color-amber); color: var(--color-amber);">[🔵 DNA 주형 가닥]</button>
+                    <button onclick="checkS5Type('RNA')" style="border-color: var(--color-blue); color: var(--color-blue);">[🟢 전사된 RNA 서열]</button>
+                </div>
             </div>
 
             <div id="transcription-area" class="transcription-group" style="display: none;">
-                <h4 style="color: var(--color-amber);">DNA 주형 가닥</h4>
+                <h4 style="color: var(--color-amber); font-size: 1rem;">DNA 주형 가닥</h4>
                 <div id="dna-sequence" class="sequence-container"></div>
-                <div style="margin: 10px 0;">⬇ 상보적 전사 (A→U, T→A, G→C, C→G) ⬇</div>
-                <h4 style="color: var(--color-blue);">RNA 서열 입력</h4>
+                <div style="margin: 5px 0; font-size: 0.9rem; color: #aaa;">⬇ 상보적 전사 (A→U, T→A, G→C, C→G) ⬇</div>
+                <h4 style="color: var(--color-blue); font-size: 1rem;">RNA 서열 입력</h4>
                 <div id="rna-input-group" class="input-group"></div>
-                <button id="btn-transcribe" style="margin-top: 10px;">전사 완료 및 검증</button>
+                <button id="btn-transcribe" style="margin-top: 15px; padding: 12px 20px;">전사 완료 및 검증</button>
             </div>
 
             <div id="translation-area" style="width: 100%; text-align: center; display: none;">
-                <h4 style="color: var(--color-blue); margin-bottom: 10px;">전사된 RNA 서열</h4>
+                <h4 style="color: var(--color-blue); margin-bottom: 10px; font-size: 1rem;">전사된 RNA 서열</h4>
                 <div id="rna-sequence" class="sequence-container"></div>
-                <h4 style="margin: 20px 0 10px 0;">암호 해독 (번역)</h4>
+                <h4 style="margin: 20px 0 10px 0; font-size: 1rem;">암호 해독 (번역)</h4>
                 <div id="answer-input-group" class="input-group"></div>
-                <button id="btn-unlock" style="margin-top: 20px; font-size: 1.2rem; padding: 15px 30px;">잠금 해제 시도</button>
+                <button id="btn-unlock" style="margin-top: 20px; font-size: 1.1rem; padding: 15px 30px; width: 100%; max-width: 300px;">잠금 해제 시도</button>
             </div>
 
-            <div id="boss-area" style="width: 100%; text-align: center; display: none; flex-direction: column; gap: 20px;">
-                <div style="border: 1px solid var(--text-dim); padding: 15px;">
-                    <h4 style="color: var(--color-amber);">[Part A] DNA 주형 가닥 → 영어 코돈표 번역</h4>
+            <div id="boss-area" style="width: 100%; text-align: center; display: none; flex-direction: column; gap: 15px;">
+                <div style="border: 1px solid var(--text-dim); padding: 12px; border-radius: 5px;">
+                    <h4 style="color: var(--color-amber); font-size: 0.95rem;">[Part A] DNA 주형 가닥 → 영어 번역</h4>
                     <div id="boss-dna-seq" class="sequence-container" style="margin-top:10px;"></div>
                     <div id="boss-ans-a" class="input-group" style="margin-top:10px;"></div>
                 </div>
-                <div style="border: 1px solid var(--text-dim); padding: 15px;">
-                    <h4 style="color: var(--color-blue);">[Part B] 전사된 RNA 서열 → 한글 코돈표 번역</h4>
+                <div style="border: 1px solid var(--text-dim); padding: 12px; border-radius: 5px;">
+                    <h4 style="color: var(--color-blue); font-size: 0.95rem;">[Part B] 전사된 RNA 서열 → 한글 번역</h4>
                     <div id="boss-rna-seq" class="sequence-container" style="margin-top:10px;"></div>
                     <div id="boss-ans-b" class="input-group" style="margin-top:10px;"></div>
                 </div>
-                <button id="btn-boss-unlock" style="font-size: 1.2rem; padding: 15px 30px; background: #003300;">백신 합성 시작</button>
+                <button id="btn-boss-unlock" style="font-size: 1.1rem; padding: 15px 20px; background: #003300; width: 100%;">백신 합성 시작</button>
             </div>
 
             <div id="virtual-keyboard">
@@ -300,30 +354,29 @@
         </div>
 
         <div class="panel tools-area">
-            <h3 style="border-bottom: 1px solid var(--text-dim); padding-bottom: 10px; margin-bottom: 10px;">SYSTEM TOOLS</h3>
             <button onclick="showCodonTable()">📋 코돈 사전 열기</button>
             <button onclick="showTranscriptionRule()" style="border-color: var(--color-amber); color: var(--color-amber);">🔬 전사 규칙 보기</button>
-            <button onclick="useHint()" style="border-color: var(--color-amber); color: var(--color-amber); margin-top: 20px;">💡 힌트 요청 (점수 차감)</button>
-            <div id="hint-display" style="margin-top: 15px; color: var(--color-amber); font-size: 0.9rem;"></div>
+            <button onclick="useHint()" style="border-color: var(--color-amber); color: var(--color-amber);">💡 힌트 요청 (-점수)</button>
+            <div id="hint-display" style="color: var(--color-amber); font-size: 0.85rem; word-break: keep-all;"></div>
         </div>
     </div>
 
     <div id="ending-screen" class="screen">
-        <div class="panel" style="text-align: center; max-width: 800px; margin: 0 auto;">
-            <h1 style="color: var(--color-green); margin-bottom: 20px;">백신 합성 완료</h1>
-            <p style="font-size: 1.2rem; line-height: 1.8; margin-bottom: 30px;">
+        <div class="panel" style="text-align: center; max-width: 800px; margin: 0 auto; width: 100%;">
+            <h1 style="color: var(--color-green); margin-bottom: 20px; font-size: 1.8rem;">백신 합성 완료</h1>
+            <p style="font-size: 1rem; line-height: 1.6; margin-bottom: 30px; word-break: keep-all;">
                 GENOME-X 바이러스 무력화 성공.<br>
                 연구소 봉쇄가 해제되었습니다.<br>
                 당신의 활약으로 수많은 생명을 구했습니다.
             </p>
-            <div style="background: rgba(0,0,0,0.5); padding: 20px; border-radius: 5px; text-align: left; display: inline-block;">
+            <div style="background: rgba(0,0,0,0.5); padding: 20px; border-radius: 5px; text-align: left; display: inline-block; width: 100%; max-width: 300px;">
                 <p>소요 시간: <span id="res-time"></span></p>
                 <p>힌트 사용: <span id="res-hints"></span>회</p>
                 <p>오류(오답) 횟수: <span id="res-mistakes"></span>회</p>
-                <h2 style="margin-top: 20px; color: var(--color-blue);">최종 점수: <span id="res-score"></span>점</h2>
+                <h2 style="margin-top: 20px; color: var(--color-blue); text-align: center;">최종 점수: <span id="res-score"></span>점</h2>
             </div>
             <div style="margin-top: 30px;">
-                <button onclick="location.reload()">처음부터 다시하기</button>
+                <button onclick="location.reload()" style="padding: 15px 30px; font-size: 1.1rem; width: 100%; max-width: 300px;">처음부터 다시하기</button>
             </div>
         </div>
     </div>
@@ -334,16 +387,14 @@
     <div id="popup-overlay" class="overlay">
         <div class="popup" id="generic-popup">
             <button class="popup-close" onclick="closePopup()">✕</button>
-            <h2 id="popup-title" style="margin-bottom: 15px;"></h2>
-            <div id="popup-content" style="line-height: 1.6;"></div>
+            <h2 id="popup-title" style="margin-bottom: 15px; font-size: 1.3rem;"></h2>
+            <div id="popup-content" style="line-height: 1.6; font-size: 0.95rem; word-break: keep-all;"></div>
         </div>
     </div>
 
 <script>
 // ============================================================================
 // [교사 설정 영역] 스테이지 정답 객체 (여기서 정답을 수정하세요)
-// 주의: 각 정답의 글자 수에 맞게 게임 서열이 자동 생성됩니다.
-// 코돈표에 없는 특수기호 등은 입력하지 마세요. (영어: A~Z, 한글 자모)
 // ============================================================================
 const STAGE_ANSWERS = {
     1: "GENE",          // S1 정답 (영어)
@@ -410,7 +461,7 @@ let state = {
     hintsUsed: 0,
     startTime: 0,
     timerInterval: null,
-    s5Step: 'A' // Stage 5 진행 상태 (A -> B)
+    s5Step: 'A'
 };
 
 const DOM = {
@@ -431,11 +482,7 @@ const DOM = {
     bossArea: document.getElementById('boss-area')
 };
 
-// ============================================================================
 // 유틸리티 및 변환 함수
-// ============================================================================
-
-// 글자 -> RNA 코돈 (역산)
 function charToCodon(char, lang) {
     const dict = lang === 'KR' ? CODON_KR : CODON_EN;
     for (let codon in dict) {
@@ -444,34 +491,27 @@ function charToCodon(char, lang) {
     return "ERR";
 }
 
-// 단어 -> RNA 서열 배열
 function wordToRnaSeq(word, lang) {
     return word.split('').map(c => charToCodon(c, lang));
 }
 
-// RNA -> DNA 주형 역전사 (A->T, U->A, G->C, C->G)
 function rnaToDnaTemplate(rnaSeq) {
     const map = { 'A':'T', 'U':'A', 'G':'C', 'C':'G' };
     return rnaSeq.map(codon => codon.split('').map(base => map[base]).join(''));
 }
 
-// DNA 주형 -> RNA 전사 (사용자 입력 검증용)
 function transcribeCodon(dnaCodon) {
     const map = { 'T':'A', 'A':'U', 'C':'G', 'G':'C' };
     return dnaCodon.split('').map(base => map[base] || '').join('');
 }
 
-// 시간 포맷
 function formatTime(seconds) {
     const m = Math.floor(seconds / 60).toString().padStart(2, '0');
     const s = (seconds % 60).toString().padStart(2, '0');
     return `${m}:${s}`;
 }
 
-// ============================================================================
-// 메인 플로우 제어
-// ============================================================================
-
+// 초기화 및 플로우 제어
 window.onload = () => {
     initKeyboard();
     checkSavedData();
@@ -510,14 +550,12 @@ function closePopup() {
     DOM.popupOverlay.style.display = 'none';
 }
 
-// 좀비 출현 및 오답 처리
 function triggerZombie() {
     state.mistakes++;
     state.score = Math.max(0, state.score - 10);
     const body = document.body;
     body.classList.add('zombie-attack');
     
-    // Web Audio API (경고음)
     try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = ctx.createOscillator();
@@ -535,10 +573,7 @@ function triggerZombie() {
     }, 500);
 }
 
-// ============================================================================
-// 인트로 및 맵
-// ============================================================================
-
+// 인트로 타이핑 효과
 const introMsg = `[긴급 경보 발령 - 연구소 봉쇄 프로토콜 가동]
 
 바이러스 코드명: GENOME-X 유출 확인
@@ -603,10 +638,7 @@ function renderMap() {
     }
 }
 
-// ============================================================================
-// 스테이지 로직
-// ============================================================================
-
+// 스테이지 관리
 let currentAnswer = "";
 let currentLang = "";
 
@@ -618,33 +650,20 @@ function loadStage(stageNum) {
     document.getElementById('st-desc').innerHTML = meta.desc;
     document.getElementById('hint-display').innerHTML = '';
     
-    // UI 초기화
     DOM.s5Selector.style.display = 'none';
     DOM.transArea.style.display = 'none';
     DOM.translArea.style.display = 'none';
     DOM.bossArea.style.display = 'none';
     DOM.keyboard.style.display = currentLang === 'KR' ? 'grid' : 'none';
 
-    if (meta.forcePopup) {
-        setTimeout(() => showPopup("시스템 알림", meta.forcePopup), 500);
-    }
-    if (meta.firstTrans) {
-        setTimeout(() => showTranscriptionRule(), 600);
-    }
-    if (meta.isDanger) {
-        document.body.style.boxShadow = "inset 0 0 50px rgba(255,0,0,0.3)";
-    } else {
-        document.body.style.boxShadow = "none";
-    }
+    if (meta.forcePopup) setTimeout(() => showPopup("시스템 알림", meta.forcePopup), 500);
+    if (meta.firstTrans) setTimeout(() => showTranscriptionRule(), 600);
+    if (meta.isDanger) document.body.style.boxShadow = "inset 0 0 50px rgba(255,0,0,0.3)";
+    else document.body.style.boxShadow = "none";
 
-    if (stageNum === 10) {
-        setupBossStage();
-    } else if (stageNum === 5) {
-        state.s5Step = 'A';
-        setupStage5();
-    } else {
-        setupNormalStage(stageNum, meta);
-    }
+    if (stageNum === 10) setupBossStage();
+    else if (stageNum === 5) { state.s5Step = 'A'; setupStage5(); }
+    else setupNormalStage(stageNum, meta);
 
     showScreen('stage-screen');
 }
@@ -661,15 +680,10 @@ function setupNormalStage(stageNum, meta) {
         
         document.getElementById('btn-transcribe').onclick = () => {
             const inputs = Array.from(document.getElementById('rna-input-group').querySelectorAll('input')).map(i => i.value.toUpperCase());
-            const userRna = inputs.join('');
-            const correctRna = rnaSeq.join('');
-            
-            if (userRna === correctRna) {
+            if (inputs.join('') === rnaSeq.join('')) {
                 DOM.transArea.style.display = 'none';
                 setupTranslationArea(rnaSeq, meta);
-            } else {
-                triggerZombie();
-            }
+            } else triggerZombie();
         };
     } else {
         setupTranslationArea(rnaSeq, meta);
@@ -679,29 +693,20 @@ function setupNormalStage(stageNum, meta) {
 function setupTranslationArea(rnaSeq, meta) {
     DOM.translArea.style.display = 'flex';
     
-    // 특수 이벤트 처리
     let displaySeq = [...rnaSeq];
-    if (meta.event === 'SUBSTITUTION') {
-        const replaceIdx = Math.floor(displaySeq.length / 2);
-        displaySeq[replaceIdx] = "ERR";
-    } else if (meta.event === 'DELETION') {
-        for(let i=1; i<displaySeq.length; i++) displaySeq[i] = "▓▓▓";
-    }
+    if (meta.event === 'SUBSTITUTION') displaySeq[Math.floor(displaySeq.length / 2)] = "ERR";
+    else if (meta.event === 'DELETION') for(let i=1; i<displaySeq.length; i++) displaySeq[i] = "▓▓▓";
 
     renderSequence('rna-sequence', displaySeq, 'rna', meta.event);
     renderInputs('answer-input-group', rnaSeq.length, currentLang);
     
     document.getElementById('btn-unlock').onclick = () => {
         const inputs = Array.from(document.getElementById('answer-input-group').querySelectorAll('input')).map(i => i.value);
-        if (inputs.join('') === currentAnswer) {
-            clearStage();
-        } else {
-            triggerZombie();
-        }
+        if (inputs.join('') === currentAnswer) clearStage();
+        else triggerZombie();
     };
 }
 
-// 스테이지 5 전용 로직
 function setupStage5() {
     DOM.s5Selector.style.display = 'block';
     const ansData = STAGE_ANSWERS[5];
@@ -738,10 +743,9 @@ function setupStage5() {
     };
 }
 
-// 보스전 (Stage 10) 전용 로직
 function setupBossStage() {
     DOM.bossArea.style.display = 'flex';
-    DOM.keyboard.style.display = 'grid'; // 파트B 한글 입력을 위해 켬
+    DOM.keyboard.style.display = 'grid'; 
     
     const ansA = STAGE_ANSWERS[10].partA;
     const ansB = STAGE_ANSWERS[10].partB;
@@ -756,18 +760,14 @@ function setupBossStage() {
     renderSequence('boss-rna-seq', rnaB, 'rna');
     renderInputs('boss-ans-b', ansB.length, 'KR');
     
-    // 키보드 포커스 헬퍼
-    currentLang = 'KR'; // 가상 키보드는 켜두되, 입력란 포커스에 따라 작동
+    currentLang = 'KR'; 
 
     document.getElementById('btn-boss-unlock').onclick = () => {
         const valA = Array.from(document.getElementById('boss-ans-a').querySelectorAll('input')).map(i=>i.value).join('');
         const valB = Array.from(document.getElementById('boss-ans-b').querySelectorAll('input')).map(i=>i.value).join('');
         
-        if (valA === ansA && valB === ansB) {
-            showEnding();
-        } else {
-            triggerZombie();
-        }
+        if (valA === ansA && valB === ansB) showEnding();
+        else triggerZombie();
     };
 }
 
@@ -785,10 +785,7 @@ function clearStage() {
     setTimeout(() => { closePopup(); renderMap(); showScreen('map-screen'); }, 1500);
 }
 
-// ============================================================================
-// UI 렌더링 헬퍼
-// ============================================================================
-
+// 렌더링 헬퍼
 function renderSequence(containerId, seqArr, type, event) {
     const container = document.getElementById(containerId);
     container.innerHTML = '';
@@ -813,23 +810,15 @@ function renderInputs(containerId, count, mode) {
         
         input.addEventListener('input', function() {
             if (mode === 'EN' || mode === 'RNA') this.value = this.value.toUpperCase();
-            if (this.value.length === 1 && i < count - 1) {
-                container.children[i + 1].focus();
-            }
+            if (this.value.length === 1 && i < count - 1) container.children[i + 1].focus();
         });
         
-        // 가상 키보드 지원을 위해 클릭 시 현재 활성 입력창 기록
-        input.addEventListener('focus', function() {
-            window.activeInput = this;
-        });
-
+        input.addEventListener('focus', function() { window.activeInput = this; });
         container.appendChild(input);
     }
 }
 
-// ============================================================================
-// 가상 키보드 (한글 자모 전용)
-// ============================================================================
+// 가상 키보드 (한글)
 function initKeyboard() {
     const layout = [
         'ㄱ','ㄴ','ㄷ','ㄹ','ㅁ','ㅂ','ㅅ',
@@ -845,33 +834,27 @@ function initKeyboard() {
         btn.onclick = () => {
             if (window.activeInput && window.activeInput.dataset.mode === 'KR') {
                 window.activeInput.value = char;
-                // 다음 칸으로 자동 포커스 이동
                 const sibling = window.activeInput.nextElementSibling;
-                if (sibling && sibling.tagName === 'INPUT') {
-                    sibling.focus();
-                }
+                if (sibling && sibling.tagName === 'INPUT') sibling.focus();
             }
         };
         DOM.keyboard.appendChild(btn);
     });
 }
 
-// ============================================================================
-// 툴 및 팝업 기능
-// ============================================================================
-
+// 팝업 기능
 function showCodonTable() {
     const isKr = currentLang === 'KR' || state.currentStage === 10;
     const isEn = currentLang === 'EN' || state.currentStage === 10;
     
     let html = '';
     if (isEn) {
-        html += '<h4 style="color:var(--color-blue);">[영어 알파벳 코돈표]</h4><div class="codon-table-grid">';
+        html += '<h4 style="color:var(--color-blue); margin-bottom:5px;">[영어 코돈표]</h4><div class="codon-table-grid">';
         for(let key in CODON_EN) html += `<div class="codon-item"><span style="color:var(--text-dim)">${key}</span> <b>${CODON_EN[key]}</b></div>`;
         html += '</div><br>';
     }
     if (isKr) {
-        html += '<h4 style="color:var(--color-blue);">[한글 자모 코돈표]</h4><div class="codon-table-grid">';
+        html += '<h4 style="color:var(--color-blue); margin-bottom:5px;">[한글 자모 코돈표]</h4><div class="codon-table-grid">';
         for(let key in CODON_KR) html += `<div class="codon-item"><span style="color:var(--text-dim)">${key}</span> <b>${CODON_KR[key]}</b></div>`;
         html += '</div>';
     }
@@ -880,15 +863,14 @@ function showCodonTable() {
 
 function showTranscriptionRule() {
     showPopup("🔬 전사 규칙", `
-        <b>DNA 가닥 중 한 가닥(주형 가닥)</b>을 바탕으로 <b>전사된 RNA</b>가 만들어질 때의 상보적 결합 규칙입니다.<br><br>
-        <div style="background:#000; padding:15px; text-align:center; border:1px dashed var(--text-dim);">
-            DNA (주형) &nbsp;&nbsp;➔&nbsp;&nbsp; RNA (전사됨)<br>
-            <b style="color:var(--color-amber);">A</b> (아데닌) &nbsp;&nbsp;➔&nbsp;&nbsp; <b style="color:var(--color-blue);">U</b> (유라실)<br>
-            <b style="color:var(--color-amber);">T</b> (타이민) &nbsp;&nbsp;➔&nbsp;&nbsp; <b style="color:var(--color-blue);">A</b> (아데닌)<br>
-            <b style="color:var(--color-amber);">G</b> (구아닌) &nbsp;&nbsp;➔&nbsp;&nbsp; <b style="color:var(--color-blue);">C</b> (사이토신)<br>
-            <b style="color:var(--color-amber);">C</b> (사이토신) &nbsp;&nbsp;➔&nbsp;&nbsp; <b style="color:var(--color-blue);">G</b> (구아닌)
+        <b>DNA 가닥 중 한 가닥(주형 가닥)</b>을 바탕으로 <b>전사된 RNA</b>가 만들어질 때의 규칙입니다.<br><br>
+        <div style="background:#000; padding:15px; text-align:center; border:1px dashed var(--text-dim); font-size:1.1rem; line-height:1.8;">
+            <b style="color:var(--color-amber);">A</b> (아데닌) &nbsp;➔&nbsp; <b style="color:var(--color-blue);">U</b> (유라실)<br>
+            <b style="color:var(--color-amber);">T</b> (타이민) &nbsp;➔&nbsp; <b style="color:var(--color-blue);">A</b> (아데닌)<br>
+            <b style="color:var(--color-amber);">G</b> (구아닌) &nbsp;➔&nbsp; <b style="color:var(--color-blue);">C</b> (사이토신)<br>
+            <b style="color:var(--color-amber);">C</b> (사이토신) &nbsp;➔&nbsp; <b style="color:var(--color-blue);">G</b> (구아닌)
         </div>
-        <br>※ RNA에는 타이민(T) 대신 유라실(U)이 사용됩니다.
+        <br>※ RNA에는 T 대신 U가 사용됩니다.
     `);
 }
 
@@ -897,25 +879,21 @@ function useHint() {
     let cost = 0;
     let hintText = "";
     
-    if (state.hintsUsed % 3 === 1) { cost = 5; hintText = "방향성 제시: 현재 단계에서는 먼저 전사 규칙을 적용해야 할지, 바로 코돈표를 봐야 할지 서열의 알파벳(T 유무)을 확인하세요."; }
-    else if (state.hintsUsed % 3 === 2) { cost = 10; hintText = "정답 단서: 정답의 첫 글자는 '" + (typeof currentAnswer === 'string' ? currentAnswer[0] : "V / ㅅ") + "' 입니다."; }
-    else { cost = 20; hintText = "강력한 단서: " + (typeof currentAnswer === 'string' ? currentAnswer : "정답은 백신(ㅅㅏㄹㅏㅁ)과 관련있습니다."); }
+    if (state.hintsUsed % 3 === 1) { cost = 5; hintText = "방향성: 전사가 필요한지, 바로 코돈표를 볼지 T/U 유무를 확인하세요."; }
+    else if (state.hintsUsed % 3 === 2) { cost = 10; hintText = "정답 첫 글자: '" + (typeof currentAnswer === 'string' ? currentAnswer[0] : "V / ㅅ") + "' 입니다."; }
+    else { cost = 20; hintText = "결정적 단서: " + (typeof currentAnswer === 'string' ? currentAnswer : "정답은 백신(ㅅㅏㄹㅏㅁ)과 관련있습니다."); }
     
     state.score -= cost;
-    document.getElementById('hint-display').innerText = `[힌트 수신] ${hintText} (점수 -${cost})`;
+    document.getElementById('hint-display').innerText = `[힌트 수신] ${hintText}`;
 }
 
-// ============================================================================
 // 엔딩
-// ============================================================================
-
 function showEnding() {
     clearInterval(state.timerInterval);
     localStorage.removeItem('genomeX_save');
     const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
     
-    // 시간 보너스
-    if (elapsed < 600) state.score += 200; // 10분 이내
+    if (elapsed < 600) state.score += 200; // 10분 이내 보너스
     
     document.getElementById('res-time').innerText = formatTime(elapsed);
     document.getElementById('res-hints').innerText = state.hintsUsed;
@@ -927,7 +905,6 @@ function showEnding() {
     
     showScreen('ending-screen');
     
-    // 배경 효과 변경
     document.querySelector('.dna-bg').style.background = `
         radial-gradient(circle at 50% 50%, rgba(0,255,65,0.1) 0%, var(--bg-dark) 100%)
     `;
