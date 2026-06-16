@@ -32,7 +32,7 @@
             flex-direction: column;
             min-height: 100vh;
             user-select: none;
-            -webkit-user-select: none;
+            -webkit-user-select: none; /* 모바일 텍스트 드래그 방지 */
         }
 
         /* Background Effects */
@@ -65,7 +65,7 @@
             cursor: pointer;
             transition: all 0.2s;
             border-radius: 3px;
-            touch-action: manipulation;
+            touch-action: manipulation; /* 모바일 더블탭 줌 방지 */
         }
         button:hover:not(:disabled) {
             background: var(--color-green);
@@ -141,9 +141,9 @@
         .map-node.current::after { content: '📍'; position: absolute; font-size: 1.5rem; }
 
         /* Stage Screen */
-        #stage-screen { max-width: 1300px; margin: 0 auto; width: 100%; display: none; grid-template-columns: 1fr 2fr 1fr; gap: 20px; }
+        #stage-screen { max-width: 1200px; margin: 0 auto; width: 100%; grid-template-columns: 1fr 2fr 1.5fr; gap: 20px; }
         #stage-screen.active { display: grid; }
-        @media (max-width: 1023px) { #stage-screen.active { grid-template-columns: 1fr; } }
+        @media (max-width: 1023px) { #stage-screen { grid-template-columns: 1fr; } }
         
         .story-panel { font-size: 1.1rem; line-height: 1.6; word-break: keep-all; }
         .game-area { display: flex; flex-direction: column; align-items: center; gap: 20px; }
@@ -177,14 +177,6 @@
         #virtual-keyboard { display: none; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 15px; background: rgba(0,0,0,0.8); padding: 10px; border: 1px solid var(--border); border-radius: 5px; width: 100%; max-width: 500px; }
         .key-btn { padding: 12px 0; font-size: 1.2rem; font-weight: bold; border-radius: 4px; background: #111; }
 
-        /* 📋 고정형 코돈 사전 스타일 */
-        .embedded-codon-box { width: 100%; max-height: 400px; overflow-y: auto; background: rgba(0,0,0,0.4); border: 1px solid var(--text-dim); padding: 10px; border-radius: 5px; }
-        .codon-table-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;
-            font-family: var(--font-mono); font-size: 0.85rem;
-        }
-        .codon-item { background: #000; border: 1px solid #224422; padding: 5px; text-align: center; border-radius: 3px; display: flex; justify-content: space-around; }
-
         /* Popups */
         .overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -202,6 +194,13 @@
         }
         .popup-close { position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 1.5rem; color: var(--text-dim); cursor: pointer; padding: 5px 10px; box-shadow: none; }
         .popup-close:hover { color: var(--color-green); background: none; box-shadow: none; }
+        
+        /* 고정 표 전용 그리드 (최대한 촘촘하게 표시) */
+        .codon-table-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; margin-top: 10px;
+            font-family: var(--font-mono); font-size: 0.8rem;
+        }
+        .codon-item { background: #000; border: 1px solid var(--text-dim); padding: 4px 2px; text-align: center; border-radius: 3px; }
 
         /* Animations */
         @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
@@ -240,10 +239,10 @@
             
             #intro-text { font-size: 1rem; min-height: 200px; }
             
-            /* 상태바 최적화 */
+            /* 상태바 최적화 (2줄로 분리) */
             #status-bar { flex-direction: column; gap: 5px; padding: 8px; font-size: 0.9rem; text-align: center; }
             
-            /* 맵 그리드 최적화 (3열) */
+            /* 맵 그리드 최적화 (모바일은 3열) */
             .map-grid { grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
             .map-node { width: 65px; height: 65px; font-size: 1rem; }
             .map-node.locked::after, .map-node.cleared::after, .map-node.current::after { font-size: 1.2rem; }
@@ -252,25 +251,31 @@
             .codon-card { padding: 10px 6px; font-size: 1.1rem; min-width: 45px; }
             .char-input { width: 36px; height: 46px; font-size: 1.3rem; }
             
-            /* 가상 키보드 (5열) */
+            /* 가상 키보드 최적화 (모바일은 5열, 버튼 크게) */
             #virtual-keyboard { grid-template-columns: repeat(5, 1fr); gap: 4px; padding: 8px; }
             .key-btn { padding: 15px 0; font-size: 1.1rem; }
             
-            /* 고정형 코돈 사전 모바일에서 폭 조정 */
-            .codon-table-grid { grid-template-columns: repeat(2, 1fr); }
-            .embedded-codon-box { max-height: 250px; }
+            /* 코돈표 팝업 최적화 */
+            .codon-table-grid { grid-template-columns: repeat(3, 1fr); gap: 3px; font-size: 0.75rem; }
+            .popup { padding: 20px 15px; }
             
-            /* 우측 툴바 우회 정렬 */
-            .tools-area { flex-direction: column; width: 100%; margin-top: 10px; }
-            .tools-btn-group { display: flex; gap: 10px; width: 100%; }
-            .tools-btn-group button { flex: 1; font-size: 0.9rem; padding: 12px 5px; }
+            /* 우측 툴바 버튼 및 고정 표 모바일 배치 */
+            .tools-area { flex-direction: column; margin-top: 10px; }
+            .tools-buttons { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 5px; width: 100%; }
+            .tools-buttons button { flex: 1 1 45%; min-width: 130px; font-size: 0.9rem; padding: 10px 5px; }
             #hint-display { width: 100%; text-align: center; }
+            
+            /* 보스 스테이지 여백 조정 */
+            #boss-area { gap: 10px; }
+            #boss-area .sequence-container { margin-bottom: 5px; }
         }
 
+        /* 아이폰 등 아주 작은 화면(SE 등) 추가 최적화 */
         @media (max-width: 380px) {
             .char-input { width: 32px; height: 42px; font-size: 1.1rem; }
             .map-grid { gap: 10px; }
             .map-node { width: 55px; height: 55px; }
+            .codon-table-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
@@ -296,7 +301,8 @@
         <div class="panel" style="text-align: center;">
             <h2 style="font-size: 1.5rem;">연구소 평면도</h2>
             <p style="color: var(--text-dim); margin-top: 10px; font-size: 0.9rem;">안전 구역을 확보하여 백신 합성실(10구역)까지 도달하십시오.</p>
-            <div class="map-grid" id="map-grid"></div>
+            <div class="map-grid" id="map-grid">
+                </div>
         </div>
     </div>
 
@@ -347,17 +353,21 @@
                 <button id="btn-boss-unlock" style="font-size: 1.1rem; padding: 15px 20px; background: #003300; width: 100%;">백신 합성 시작</button>
             </div>
 
-            <div id="virtual-keyboard"></div>
+            <div id="virtual-keyboard">
+                </div>
         </div>
 
         <div class="panel tools-area">
-            <div id="live-codon-panel" class="embedded-codon-box">
-                </div>
-            <div class="tools-btn-group">
-                <button onclick="showTranscriptionRule()" style="border-color: var(--color-amber); color: var(--color-amber);">🔬 전사 규칙</button>
-                <button onclick="useHint()" style="border-color: var(--color-amber); color: var(--color-amber);">💡 힌트 요청</button>
+            <div class="tools-buttons">
+                <button onclick="showTranscriptionRule()" style="border-color: var(--color-amber); color: var(--color-amber); width: 100%;">🔬 전사 규칙 보기</button>
+                <button onclick="useHint()" style="border-color: var(--color-amber); color: var(--color-amber); width: 100%;">💡 힌트 요청 (-점수)</button>
             </div>
             <div id="hint-display" style="color: var(--color-amber); font-size: 0.85rem; word-break: keep-all;"></div>
+            
+            <div id="fixed-codon-panel" style="border-top: 1px dashed var(--text-dim); margin-top: 10px; padding-top: 10px; width:100%;">
+                <h3 style="color: var(--color-blue); font-size: 1rem; margin-bottom: 5px;">📋 코돈 사전 (상시 노출)</h3>
+                <div id="fixed-codon-content"></div>
+            </div>
         </div>
     </div>
 
@@ -365,12 +375,14 @@
         <div class="panel" style="text-align: center; max-width: 800px; margin: 0 auto; width: 100%;">
             <h1 style="color: var(--color-green); margin-bottom: 20px; font-size: 1.8rem;">백신 합성 완료</h1>
             <p style="font-size: 1rem; line-height: 1.6; margin-bottom: 30px; word-break: keep-all;">
-                GENOME-X 바이러스 무력화 성공.<br>연구소 봉쇄가 해제되었습니다.<br>당신의 활약으로 수많은 생명을 구했습니다.
+                GENOME-X 바이러스 무력화 성공.<br>
+                연구소 봉쇄가 해제되었습니다.<br>
+                당신의 활약으로 수많은 생명을 구했습니다.
             </p>
             <div style="background: rgba(0,0,0,0.5); padding: 20px; border-radius: 5px; text-align: left; display: inline-block; width: 100%; max-width: 300px;">
                 <p>소요 시간: <span id="res-time"></span></p>
                 <p>힌트 사용: <span id="res-hints"></span>회</p>
-                <p>오류(오답) 횟: <span id="res-mistakes"></span>회</p>
+                <p>오류(오답) 횟수: <span id="res-mistakes"></span>회</p>
                 <h2 style="margin-top: 20px; color: var(--color-blue); text-align: center;">최종 점수: <span id="res-score"></span>점</h2>
             </div>
             <div style="margin-top: 30px;">
@@ -392,121 +404,220 @@
 
 <script>
 // ============================================================================
-// [교사 설정 영역] 스테이지 정답 객체
+// [교사 설정 영역] 스테이지 정답 객체 (여기서 정답을 수정하세요)
 // ============================================================================
 const STAGE_ANSWERS = {
-    1: "GENE", 2: "VIRUS", 3: "OPEN", 4: "ㄷㅏㅎㅏㄱ",
-    5: { typeA: "RNA", ansA: "CELL", typeB: "DNA", ansB: "LIFE" },
-    6: "ㅂㅏㅇㅇㅓㅁㅏㄱ", 7: "DECODE", 8: "ALIVE", 9: "BACKUP",
-    10: { partA: "VALID", partB: "ㅅㅏㄹㅏㅁ" }
+    1: "GENE",          // S1 정답 (영어)
+    2: "VIRUS",         // S2 정답 (영어)
+    3: "OPEN",          // S3 정답 (영어, DNA->RNA 전사 필요)
+    4: "ㄷㅏㅎㅏㄱ",    // S4 정답 (한글, DNA->RNA 전사 필요)
+    5: {                // S5 정답 (식별 문제 2개)
+        typeA: "RNA", ansA: "CELL",
+        typeB: "DNA", ansB: "LIFE"
+    },
+    6: "ㅂㅏㅇㅇㅓㅁㅏㄱ", // S6 정답 (한글 7자모, 방어막)
+    7: "DECODE",        // S7 정답 (영어 6글자, DNA 전사)
+    8: "ALIVE",         // S8 정답 (영어, 데이터 변조 이벤트)
+    9: "BACKUP",        // S9 정답 (영어, 데이터 파괴 이벤트)
+    10: {               // S10 정답 (보스전)
+        partA: "VALID", // 영어 (DNA 주형)
+        partB: "ㅅㅏㄹㅏㅁ" // 한글 (전사된 RNA)
+    }
 };
 
-// 코돈 사전 데이터
+// ============================================================================
+// 게임 데이터 및 로직
+// ============================================================================
+
+// 1. 코돈표 정의 (게임용 변형)
 const CODON_EN = {
-    "AUA":"A", "AUC":"B", "AUU":"C", "AUG":"D", "ACA":"E", "ACC":"F", "ACU":"G", "ACG":"H", 
-    "AAA":"I", "AAC":"J", "AAU":"K", "AAG":"L", "AGA":"M", "AGC":"N", "AGU":"O", "AGG":"P", 
-    "CUA":"Q", "CUC":"R", "CUU":"S", "CUG":"T", "CCA":"U", "CCC":"V", "CCU":"W", "CCG":"X", 
-    "CAA":"Y", "CAC":"Z", "GUA":".", "GUC":"!", "GUU":"?", "GUG":"~"
+    "AUA":"A", "AUC":"B", "AUU":"C", "AUG":"D", "ACA":"E",
+    "ACC":"F", "ACU":"G", "ACG":"H", "AAA":"I", "AAC":"J",
+    "AAU":"K", "AAG":"L", "AGA":"M", "AGC":"N", "AGU":"O",
+    "AGG":"P", "CUA":"Q", "CUC":"R", "CUU":"S", "CUG":"T",
+    "CCA":"U", "CCC":"V", "CCU":"W", "CCG":"X", "CAA":"Y",
+    "CAC":"Z", "GUA":".", "GUC":"!", "GUU":"?", "GUG":"~"
 };
 
 const CODON_KR = {
-    "AUA":"ㄱ", "AUC":"ㄴ", "AUU":"ㄷ", "AUG":"ㄹ", "ACA":"ㅁ", "ACC":"ㅂ", "ACU":"ㅅ", "ACG":"ㅇ", 
-    "AAA":"ㅈ", "AAC":"ㅊ", "AAU":"ㅋ", "AAG":"ㅌ", "AGA":"ㅍ", "AGC":"ㅎ", "AGU":"ㅏ", "AGG":"ㅑ", 
-    "CUA":"ㅓ", "CUC":"ㅕ", "CUU":"ㅗ", "CUG":"ㅛ", "CCA":"ㅜ", "CCC":"ㅠ", "CCU":"ㅡ", "CCG":"ㅣ", 
-    "CAA":".", "CAC":"!", "CAU":"?", "CAG":"~"
+    "AUA":"ㄱ", "AUC":"ㄴ", "AUU":"ㄷ", "AUG":"ㄹ", "ACA":"ㅁ",
+    "ACC":"ㅂ", "ACU":"ㅅ", "ACG":"ㅇ", "AAA":"ㅈ", "AAC":"ㅊ",
+    "AAU":"ㅋ", "AAG":"ㅌ", "AGA":"ㅍ", "AGC":"ㅎ", "AGU":"ㅏ",
+    "AGG":"ㅑ", "CUA":"ㅓ", "CUC":"ㅕ", "CUU":"ㅗ", "CUG":"ㅛ",
+    "CCA":"ㅜ", "CCC":"ㅠ", "CCU":"ㅡ", "CCG":"ㅣ", "CAA":".",
+    "CAC":"!", "CAU":"?", "CAG":"~"
 };
 
+// 2. 스테이지 메타 데이터
 const STAGES = [
-    {},
-    { title: "STAGE 1: 번역 기초", desc: "연구소 입구 금고를 열어야 합니다.<br>우측의 [코돈 사전]을 참고해 전사된 RNA 서열을 알맞은 알파벳으로 해독하세요.", lang: 'EN', needTrans: false },
+    {}, // 인덱스 0 사용 안함
+    { title: "STAGE 1: 번역 기초", desc: "연구소 입구 금고를 열어야 합니다.<br>박사님이 남긴 암호 메모를 발견했습니다.<br>전사된 RNA 서열을 코돈표에서 찾아 해독하세요.", lang: 'EN', needTrans: false },
     { title: "STAGE 2: 서열 확장", desc: "복도 컴퓨터의 잠금을 해제해야 합니다.<br>비밀번호는 RNA 서열 5코돈을 번역하면 나옵니다.", lang: 'EN', needTrans: false },
-    { title: "STAGE 3: DNA 주형 해독 입문", desc: "박사님의 연구 노트를 발견했습니다!<br>하지만 이것은 전사된 RNA 서열이 아니라 <b>DNA 주형 가닥</b>입니다.<br>전사 규칙에 따라 상보적 RNA로 변환(입력)한 뒤 번역하세요.", lang: 'EN', needTrans: true, firstTrans: true },
-    { title: "STAGE 4: 한글 자모 암호", desc: "보안이 강화되어 <b>한글 자모 코돈표</b>로 체계가 변경되었습니다.<br>우측 사전에 활성화된 한글 코돈표를 보고 암호를 해독하세요.", lang: 'KR', needTrans: true, forcePopup: "⚠ 코돈표가 변경되었습니다!\n이제부터 한글 자모 코돈표를 사용합니다." },
-    { title: "STAGE 5: 데이터 유형 판별", desc: "바이러스가 연구 기록들을 뒤섞었습니다!<br>주어진 서열이 DNA 주형 가닥인지, 이미 전사된 RNA 서열인지 먼저 식별하세요.<br>(힌트: RNA 서열에는 T가 없고 U가 사용됩니다)", lang: 'EN', isSpecial5: true },
-    { title: "STAGE 6: 긴 서열 복호화", desc: "연구소 내부 서버실의 잠금 해제 코드입니다.<br>DNA 기록이 더 길어졌습니다. 우측의 한글 사전을 잘 확인하세요.", lang: 'KR', needTrans: true },
-    { title: "STAGE 7: 교차 암호 시스템", desc: "백신 저장고의 비밀번호입니다.<br>다시 영어 암호 체계로 원복되었습니다.", lang: 'EN', needTrans: true, forcePopup: "⚠ 코돈표가 다시 영어 알파벳으로 변경되었습니다!" },
-    { title: "STAGE 8: 데이터 변조", desc: "암호를 해독하세요. 기록 일부가 깨져 있을 수 있습니다.", lang: 'EN', needTrans: true, event: 'SUBSTITUTION', forcePopup: "🧟 경고! 바이러스가 데이터 파일을 공격했습니다!\n기록의 일부(ERR)가 변조되었습니다.\n번역 결과를 보고 문맥에 맞는 알파벳을 유추해 정답을 완성하세요.", isDanger: true },
-    { title: "STAGE 9: 기록 파괴", desc: "손상되지 않은 단서를 찾아 암호를 복구하세요.", lang: 'EN', needTrans: false, event: 'DELETION', forcePopup: "🧟🧟 심각한 경고!\n바이러스가 기록에서 데이터를 삭제했습니다!\n이후 대부분의 정보가 완전히 파괴(▓)되었습니다.\n앞부분 정보와 문맥을 활용해 단어를 입력하십시오.", isDanger: true },
-    { title: "STAGE 10: 백신 합성", desc: "마지막 관문입니다. 두 부분의 암호를 동시 해독해야 합니다.<br>Part A: 영어 코돈표 해독 (DNA 주형 가닥)<br>Part B: 한글 코돈표 해독 (전사된 RNA 서열)", lang: 'BOSS' }
+    { title: "STAGE 3: DNA 주형 해독 입문", desc: "박사님의 연구 노트를 발견했습니다!<br>하지만 이것은 전사된 RNA 서열이 아니라 <b>DNA 가닥 중 한 가닥(주형 가닥)</b>입니다.<br>먼저 상보적 결합 규칙에 따라 <b>전사된 RNA</b>로 변환한 뒤 코돈표로 번역하세요.", lang: 'EN', needTrans: true, firstTrans: true },
+    { title: "STAGE 4: 한글 자모 암호", desc: "박사님은 보안을 강화하기 위해 두 번째 암호 체계를 사용했습니다.<br>이번 암호는 <b>한글 자모 코돈표</b>로 해독해야 합니다.<br>[코돈 사전] 버튼을 눌러 새 코돈표를 확인하세요.", lang: 'KR', needTrans: true, forcePopup: "⚠ 코돈표가 변경되었습니다!\n이제부터 한글 자모 코돈표를 사용합니다." },
+    { title: "STAGE 5: 데이터 유형 판별", desc: "바이러스가 연구 기록들을 뒤섞었습니다!<br>주어진 서열이 DNA 주형 가닥인지, 이미 전사된 RNA 서열인지 먼저 확인하세요.<br>(힌트: RNA 서열에는 T가 없고 U가 사용됩니다)", lang: 'EN', isSpecial5: true },
+    { title: "STAGE 6: 긴 서열 복호화", desc: "연구소 내부 서버실의 잠금 해제 코드입니다.<br>DNA 기록이 더 길어졌습니다. 집중하세요.", lang: 'KR', needTrans: true },
+    { title: "STAGE 7: 교차 암호 시스템", desc: "백신 저장고의 비밀번호입니다.<br>박사님은 두 가지 암호 체계를 번갈아 사용했군요.", lang: 'EN', needTrans: true, forcePopup: "⚠ 코돈표가 다시 영어 알파벳으로 변경되었습니다!" },
+    { title: "STAGE 8: 데이터 변조", desc: "암호를 해독하세요. 기록 일부가 깨져 있을 수 있습니다.", lang: 'EN', needTrans: true, event: 'SUBSTITUTION', forcePopup: "🧟 경고! 바이러스가 데이터 파일을 공격했습니다!\n기록의 일부가 변조되었습니다.\n번역 결과에 이상한 코드가 섞여 있을 수 있습니다.\n올바른 단어를 문맥에 맞게 유추하여 입력하세요.", isDanger: true },
+    { title: "STAGE 9: 기록 파괴", desc: "손상되지 않은 단서를 찾아 암호를 복구하세요.", lang: 'EN', needTrans: false, event: 'DELETION', forcePopup: "🧟🧟 심각한 경고!\n바이러스가 기록에서 데이터를 삭제했습니다!\n이후 대부분의 코돈 정보가 완전히 파괴되었습니다.\n손상되지 않은 앞부분 코돈과 힌트 시스템을 활용해 유추하십시오.", isDanger: true },
+    { title: "STAGE 10: 백신 합성", desc: "이것이 마지막 관문입니다.<br>박사님이 백신 합성 코드를 두 부분으로 나눠 각각 다른 코돈표로 암호화했습니다.<br>Part A: 영어 코돈표 해독 (DNA 주형 가닥)<br>Part B: 한글 코돈표 해독 (전사된 RNA 서열)<br>두 코드를 모두 입력해야 백신이 합성됩니다.", lang: 'BOSS' }
 ];
 
-let state = { currentStage: 1, score: 1000, mistakes: 0, hintsUsed: 0, startTime: 0, timerInterval: null, s5Step: 'A' };
-let currentAnswer = "";
-let currentLang = "";
-
-const DOM = {
-    introText: document.getElementById('intro-text'), btnStart: document.getElementById('btn-start'),
-    mapGrid: document.getElementById('map-grid'), screens: document.querySelectorAll('.screen'),
-    statusBar: document.getElementById('status-bar'), timer: document.getElementById('timer'),
-    popupOverlay: document.getElementById('popup-overlay'), popupTitle: document.getElementById('popup-title'),
-    popupContent: document.getElementById('popup-content'), dangerOverlay: document.getElementById('danger-overlay'),
-    keyboard: document.getElementById('virtual-keyboard'), s5Selector: document.getElementById('s5-selector'),
-    transArea: document.getElementById('transcription-area'), translArea: document.getElementById('translation-area'),
-    bossArea: document.getElementById('boss-area'), liveCodonPanel: document.getElementById('live-codon-panel')
+// 3. 전역 상태 변수
+let state = {
+    currentStage: 1,
+    score: 1000,
+    mistakes: 0,
+    hintsUsed: 0,
+    startTime: 0,
+    timerInterval: null,
+    s5Step: 'A'
 };
 
-// 유틸리티 함수군
+const DOM = {
+    introText: document.getElementById('intro-text'),
+    btnStart: document.getElementById('btn-start'),
+    mapGrid: document.getElementById('map-grid'),
+    screens: document.querySelectorAll('.screen'),
+    statusBar: document.getElementById('status-bar'),
+    timer: document.getElementById('timer'),
+    popupOverlay: document.getElementById('popup-overlay'),
+    popupTitle: document.getElementById('popup-title'),
+    popupContent: document.getElementById('popup-content'),
+    dangerOverlay: document.getElementById('danger-overlay'),
+    keyboard: document.getElementById('virtual-keyboard'),
+    s5Selector: document.getElementById('s5-selector'),
+    transArea: document.getElementById('transcription-area'),
+    translArea: document.getElementById('translation-area'),
+    bossArea: document.getElementById('boss-area')
+};
+
+// 유틸리티 및 변환 함수
 function charToCodon(char, lang) {
     const dict = lang === 'KR' ? CODON_KR : CODON_EN;
-    for (let codon in dict) { if (dict[codon] === char) return codon; }
+    for (let codon in dict) {
+        if (dict[codon] === char) return codon;
+    }
     return "ERR";
 }
-function wordToRnaSeq(word, lang) { return word.split('').map(c => charToCodon(c, lang)); }
+
+function wordToRnaSeq(word, lang) {
+    return word.split('').map(c => charToCodon(c, lang));
+}
+
 function rnaToDnaTemplate(rnaSeq) {
     const map = { 'A':'T', 'U':'A', 'G':'C', 'C':'G' };
     return rnaSeq.map(codon => codon.split('').map(base => map[base]).join(''));
 }
+
+function transcribeCodon(dnaCodon) {
+    const map = { 'T':'A', 'A':'U', 'C':'G', 'G':'C' };
+    return dnaCodon.split('').map(base => map[base] || '').join('');
+}
+
 function formatTime(seconds) {
     const m = Math.floor(seconds / 60).toString().padStart(2, '0');
     const s = (seconds % 60).toString().padStart(2, '0');
     return `${m}:${s}`;
 }
 
-window.onload = () => { initKeyboard(); checkSavedData(); typeIntroText(); };
+// 초기화 및 플로우 제어
+window.onload = () => {
+    initKeyboard();
+    checkSavedData();
+    typeIntroText();
+};
 
 function checkSavedData() {
     const saved = localStorage.getItem('genomeX_save');
     if (saved) {
         const data = JSON.parse(saved);
         if (confirm("이전 진행 상황이 있습니다. 이어서 하시겠습니까?")) {
-            state = data; if(!state.startTime) state.startTime = Date.now();
-            DOM.btnStart.style.display = 'inline-block'; startGame(true);
+            state = data;
+            if(!state.startTime) state.startTime = Date.now();
+            DOM.btnStart.style.display = 'inline-block';
+            startGame(true);
         }
     }
 }
-function saveData() { localStorage.setItem('genomeX_save', JSON.stringify(state)); }
-function showScreen(screenId) { DOM.screens.forEach(s => s.classList.remove('active')); document.getElementById(screenId).classList.add('active'); }
-function showPopup(title, content) { DOM.popupTitle.innerHTML = title; DOM.popupContent.innerHTML = content.replace(/\n/g, '<br>'); DOM.popupOverlay.style.display = 'flex'; }
-function closePopup() { DOM.popupOverlay.style.display = 'none'; }
+
+function saveData() {
+    localStorage.setItem('genomeX_save', JSON.stringify(state));
+}
+
+function showScreen(screenId) {
+    DOM.screens.forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+}
+
+function showPopup(title, content) {
+    DOM.popupTitle.innerHTML = title;
+    DOM.popupContent.innerHTML = content.replace(/\n/g, '<br>');
+    DOM.popupOverlay.style.display = 'flex';
+}
+
+function closePopup() {
+    DOM.popupOverlay.style.display = 'none';
+}
 
 function triggerZombie() {
-    state.mistakes++; state.score = Math.max(0, state.score - 10);
-    document.body.classList.add('zombie-attack');
+    state.mistakes++;
+    state.score = Math.max(0, state.score - 10);
+    const body = document.body;
+    body.classList.add('zombie-attack');
+    
     try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator(); osc.type = 'sawtooth';
+        const osc = ctx.createOscillator();
+        osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(150, ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.5);
-        osc.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.5);
+        osc.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.5);
     } catch(e) {}
+
     setTimeout(() => {
-        document.body.classList.remove('zombie-attack');
-        showPopup("⚠ 경고", "<span style='color:red;'>데이터 불일치 감지!</span><br>잘못된 입력으로 바이러스가 활성화됩니다.<br>(점수 -10점)");
+        body.classList.remove('zombie-attack');
+        showPopup("⚠ 경고", "<span style='color:red;'>데이터 불일치 감지!</span><br>잘못된 코드로 인해 바이러스가 자극받았습니다.<br>(점수 -10점)");
     }, 500);
 }
 
-const introMsg = `[긴급 경보 발령 - 연구소 봉쇄 프로토콜 가동]\n\n바이러스 코드명: GENOME-X 유출 확인\n봉쇄 상태: 진행 중\n\n수석 연구원 Dr. Kim이 남긴 백신 합성 가이드를 바탕으로 서열 암호를 풀어 안전 구역을 확보하고 연구소를 탈출하십시오.`;
+// 인트로 타이핑 효과 (원문 그대로 보존)
+const introMsg = `[긴급 경보 발령 - 연구소 봉쇄 프로토콜 가동]
+
+바이러스 코드명: GENOME-X 유출 확인
+감염자 수: 측정 불가
+봉쇄 상태: 진행 중
+
+수석 연구원 Dr. Kim이 GENOME-X에 감염되었습니다.
+감염 전, 박사님은 백신 합성 정보를
+DNA 및 RNA 염기서열 암호로 기록에 남겼습니다.
+
+당신은 박사님의 마지막 조수.
+변형된 코돈표를 손에 쥔 채 연구소 안에 갇혔습니다.
+
+암호를 해독하고, 백신을 완성하고,
+이 연구소에서 살아 나가십시오.`;
+
 function typeIntroText() {
-    let i = 0; DOM.introText.innerHTML = '';
+    let i = 0;
+    DOM.introText.innerHTML = '';
     function typeChar() {
         if (i < introMsg.length) {
-            DOM.introText.innerHTML += introMsg.charAt(i) === '\n' ? '<br>' : introMsg.charAt(i); i++; setTimeout(typeChar, 30);
-        } else { DOM.introText.classList.remove('typing-cursor'); DOM.btnStart.style.display = 'inline-block'; }
+            DOM.introText.innerHTML += introMsg.charAt(i) === '\n' ? '<br>' : introMsg.charAt(i);
+            i++;
+            setTimeout(typeChar, 30);
+        } else {
+            DOM.introText.classList.remove('typing-cursor');
+            DOM.btnStart.style.display = 'inline-block';
+        }
     }
     typeChar();
 }
 
 DOM.btnStart.onclick = () => startGame(false);
+
 function startGame(isResume) {
     if(!isResume) state.startTime = Date.now();
     DOM.statusBar.style.display = 'flex';
@@ -514,36 +625,32 @@ function startGame(isResume) {
         const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
         DOM.timer.innerText = `⏱ 경과 시간: ${formatTime(elapsed)}`;
     }, 1000);
-    renderMap(); showScreen('map-screen');
+    renderMap();
+    showScreen('map-screen');
 }
 
 function renderMap() {
     DOM.mapGrid.innerHTML = '';
     for (let i = 1; i <= 10; i++) {
-        const node = document.createElement('div'); node.className = 'map-node'; node.innerText = i;
-        if (i < state.currentStage) { node.classList.add('cleared'); }
-        else if (i === state.currentStage) { node.classList.add('current'); node.onclick = () => loadStage(i); }
-        else { node.classList.add('locked'); }
+        const node = document.createElement('div');
+        node.className = 'map-node';
+        node.innerText = i;
+        if (i < state.currentStage) {
+            node.classList.add('cleared');
+            node.onclick = () => alert("이미 클리어한 구역입니다.");
+        } else if (i === state.currentStage) {
+            node.classList.add('current');
+            node.onclick = () => loadStage(i);
+        } else {
+            node.classList.add('locked');
+        }
         DOM.mapGrid.appendChild(node);
     }
 }
 
-// 📋 화면 우측에 코돈표 상시 동적 바인딩 함수
-function updateEmbeddedCodonTable(lang) {
-    let html = '';
-    if (lang === 'EN' || lang === 'BOSS') {
-        html += '<h4 style="color:var(--color-blue); text-align:center; font-size:0.9rem; margin-bottom:5px;">📋 영어 코돈 사전</h4><div class="codon-table-grid">';
-        for(let key in CODON_EN) html += `<div class="codon-item"><span>${key}</span><b>${CODON_EN[key]}</b></div>`;
-        html += '</div>';
-    }
-    if (lang === 'KR' || lang === 'BOSS') {
-        if(html !== '') html += '<br style="border-bottom:1px dashed #333; margin:10px 0;">';
-        html += '<h4 style="color:var(--color-blue); text-align:center; font-size:0.9rem; margin-bottom:5px;">📋 한글 코돈 사전</h4><div class="codon-table-grid">';
-        for(let key in CODON_KR) html += `<div class="codon-item"><span>${key}</span><b>${CODON_KR[key]}</b></div>`;
-        html += '</div>';
-    }
-    DOM.liveCodonPanel.innerHTML = html;
-}
+// 스테이지 관리
+let currentAnswer = "";
+let currentLang = "";
 
 function loadStage(stageNum) {
     const meta = STAGES[stageNum];
@@ -553,22 +660,46 @@ function loadStage(stageNum) {
     document.getElementById('st-desc').innerHTML = meta.desc;
     document.getElementById('hint-display').innerHTML = '';
     
-    DOM.s5Selector.style.display = 'none'; DOM.transArea.style.display = 'none';
-    DOM.translArea.style.display = 'none'; DOM.bossArea.style.display = 'none';
+    DOM.s5Selector.style.display = 'none';
+    DOM.transArea.style.display = 'none';
+    DOM.translArea.style.display = 'none';
+    DOM.bossArea.style.display = 'none';
     DOM.keyboard.style.display = currentLang === 'KR' ? 'grid' : 'none';
-
-    // 화면 우측 사전을 스테이지의 성격에 맞춰 상시 갱신
-    updateEmbeddedCodonTable(currentLang);
 
     if (meta.forcePopup) setTimeout(() => showPopup("시스템 알림", meta.forcePopup), 500);
     if (meta.firstTrans) setTimeout(() => showTranscriptionRule(), 600);
-    document.body.style.boxShadow = meta.isDanger ? "inset 0 0 50px rgba(255,0,0,0.3)" : "none";
+    if (meta.isDanger) document.body.style.boxShadow = "inset 0 0 50px rgba(255,0,0,0.3)";
+    else document.body.style.boxShadow = "none";
+
+    // 스테이지별 해당 코돈표를 화면 우측 툴바 영역에 상시 렌더링
+    updateFixedCodonTable(stageNum);
 
     if (stageNum === 10) setupBossStage();
     else if (stageNum === 5) { state.s5Step = 'A'; setupStage5(); }
     else setupNormalStage(stageNum, meta);
 
     showScreen('stage-screen');
+}
+
+// 화면에 코돈표를 상시 렌더링해주는 함수 추가
+function updateFixedCodonTable(stageNum) {
+    const container = document.getElementById('fixed-codon-content');
+    const isKr = currentLang === 'KR' || stageNum === 10;
+    const isEn = currentLang === 'EN' || stageNum === 10 || stageNum === 5; // 5단계 식별 포함
+    
+    let html = '';
+    if (isEn) {
+        html += '<h4 style="color:var(--color-blue); margin-bottom:5px; font-size:0.85rem;">[영어 코돈표]</h4><div class="codon-table-grid">';
+        for(let key in CODON_EN) html += `<div class="codon-item"><span style="color:var(--text-dim)">${key}</span> <b>${CODON_EN[key]}</b></div>`;
+        html += '</div>';
+    }
+    if (isKr) {
+        if (isEn) html += '<br>'; // 둘 다 나올 경우 개행
+        html += '<h4 style="color:var(--color-blue); margin-bottom:5px; font-size:0.85rem;">[한글 자모 코돈표]</h4><div class="codon-table-grid">';
+        for(let key in CODON_KR) html += `<div class="codon-item"><span style="color:var(--text-dim)">${key}</span> <b>${CODON_KR[key]}</b></div>`;
+        html += '</div>';
+    }
+    container.innerHTML = html;
 }
 
 function setupNormalStage(stageNum, meta) {
@@ -584,24 +715,29 @@ function setupNormalStage(stageNum, meta) {
         document.getElementById('btn-transcribe').onclick = () => {
             const inputs = Array.from(document.getElementById('rna-input-group').querySelectorAll('input')).map(i => i.value.toUpperCase());
             if (inputs.join('') === rnaSeq.join('')) {
-                DOM.transArea.style.display = 'none'; setupTranslationArea(rnaSeq, meta);
+                DOM.transArea.style.display = 'none';
+                setupTranslationArea(rnaSeq, meta);
             } else triggerZombie();
         };
-    } else { setupTranslationArea(rnaSeq, meta); }
+    } else {
+        setupTranslationArea(rnaSeq, meta);
+    }
 }
 
 function setupTranslationArea(rnaSeq, meta) {
     DOM.translArea.style.display = 'flex';
+    
     let displaySeq = [...rnaSeq];
     if (meta.event === 'SUBSTITUTION') displaySeq[Math.floor(displaySeq.length / 2)] = "ERR";
     else if (meta.event === 'DELETION') for(let i=1; i<displaySeq.length; i++) displaySeq[i] = "▓▓▓";
 
-    renderSequence('rna-sequence', displaySeq, 'rna');
+    renderSequence('rna-sequence', displaySeq, 'rna', meta.event);
     renderInputs('answer-input-group', rnaSeq.length, currentLang);
     
     document.getElementById('btn-unlock').onclick = () => {
         const inputs = Array.from(document.getElementById('answer-input-group').querySelectorAll('input')).map(i => i.value);
-        if (inputs.join('') === currentAnswer) clearStage(); else triggerZombie();
+        if (inputs.join('') === currentAnswer) clearStage();
+        else triggerZombie();
     };
 }
 
@@ -614,6 +750,7 @@ function setupStage5() {
     
     const rnaSeq = wordToRnaSeq(currentAnswer, 'EN');
     const displaySeq = currentType === 'DNA' ? rnaToDnaTemplate(rnaSeq) : rnaSeq;
+    
     renderSequence('s5-seq-display', displaySeq, currentType === 'DNA' ? 'dna' : 'rna');
     
     window.checkS5Type = (selectedType) => {
@@ -626,68 +763,108 @@ function setupStage5() {
                 document.getElementById('btn-transcribe').onclick = () => {
                     const inputs = Array.from(document.getElementById('rna-input-group').querySelectorAll('input')).map(i => i.value.toUpperCase());
                     if (inputs.join('') === rnaSeq.join('')) {
-                        DOM.transArea.style.display = 'none'; setupTranslationArea(rnaSeq, STAGES[5]);
+                        DOM.transArea.style.display = 'none';
+                        setupTranslationArea(rnaSeq, STAGES[5]);
                     } else triggerZombie();
                 };
-            } else { setupTranslationArea(displaySeq, STAGES[5]); }
-        } else { triggerZombie(); }
+            } else {
+                setupTranslationArea(displaySeq, STAGES[5]);
+            }
+        } else {
+            showPopup("❌ 오류", "서열 유형을 잘못 판단했습니다. T와 U의 존재 여부를 다시 확인하세요.");
+            triggerZombie();
+        }
     };
 }
 
 function setupBossStage() {
-    DOM.bossArea.style.display = 'flex'; DOM.keyboard.style.display = 'grid'; 
-    const ansA = STAGE_ANSWERS[10].partA; const ansB = STAGE_ANSWERS[10].partB;
-    const rnaA = wordToRnaSeq(ansA, 'EN'); const dnaA = rnaToDnaTemplate(rnaA);
+    DOM.bossArea.style.display = 'flex';
+    DOM.keyboard.style.display = 'grid'; 
+    
+    const ansA = STAGE_ANSWERS[10].partA;
+    const ansB = STAGE_ANSWERS[10].partB;
+    
+    const rnaA = wordToRnaSeq(ansA, 'EN');
+    const dnaA = rnaToDnaTemplate(rnaA);
     const rnaB = wordToRnaSeq(ansB, 'KR');
     
-    renderSequence('boss-dna-seq', dnaA, 'dna'); renderInputs('boss-ans-a', ansA.length, 'EN');
-    renderSequence('boss-rna-seq', rnaB, 'rna'); renderInputs('boss-ans-b', ansB.length, 'KR');
+    renderSequence('boss-dna-seq', dnaA, 'dna');
+    renderInputs('boss-ans-a', ansA.length, 'EN');
+    
+    renderSequence('boss-rna-seq', rnaB, 'rna');
+    renderInputs('boss-ans-b', ansB.length, 'KR');
+    
     currentLang = 'KR'; 
 
     document.getElementById('btn-boss-unlock').onclick = () => {
         const valA = Array.from(document.getElementById('boss-ans-a').querySelectorAll('input')).map(i=>i.value).join('');
         const valB = Array.from(document.getElementById('boss-ans-b').querySelectorAll('input')).map(i=>i.value).join('');
-        if (valA === ansA && valB === ansB) showEnding(); else triggerZombie();
+        
+        if (valA === ansA && valB === ansB) showEnding();
+        else triggerZombie();
     };
 }
 
 function clearStage() {
     if (state.currentStage === 5 && state.s5Step === 'A') {
-        state.s5Step = 'B'; showPopup("알림", "첫 번째 서열 해독 완료. 두 번째 데이터 유형을 분석하세요."); setupStage5(); return;
+        state.s5Step = 'B';
+        showPopup("시스템 메시지", "첫 번째 서열 해독 완료. 다음 서열을 판별하십시오.");
+        setupStage5();
+        return;
     }
-    showPopup("CLEAR", "보안 인증 성공. 다음 구역으로 이동합니다.");
-    state.currentStage++; saveData();
+    
+    showPopup("CLEAR", "보안 락이 해제되었습니다.");
+    state.currentStage++;
+    saveData();
     setTimeout(() => { closePopup(); renderMap(); showScreen('map-screen'); }, 1500);
 }
 
-function renderSequence(containerId, seqArr, type) {
-    const container = document.getElementById(containerId); container.innerHTML = '';
+// 렌더링 헬퍼
+function renderSequence(containerId, seqArr, type, event) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
     seqArr.forEach(codon => {
-        const el = document.createElement('div'); el.className = `codon-card ${type}`;
+        const el = document.createElement('div');
+        el.className = `codon-card ${type}`;
         if(codon === "ERR" || codon === "▓▓▓") el.classList.add('corrupted');
-        el.innerText = codon; container.appendChild(el);
+        el.innerText = codon;
+        container.appendChild(el);
     });
 }
 
 function renderInputs(containerId, count, mode) {
-    const container = document.getElementById(containerId); container.innerHTML = '';
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
     for (let i = 0; i < count; i++) {
-        const input = document.createElement('input'); input.type = 'text'; input.className = 'char-input';
-        input.maxLength = 1; input.dataset.mode = mode;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'char-input';
+        input.maxLength = 1;
+        input.dataset.mode = mode;
+        
         input.addEventListener('input', function() {
             if (mode === 'EN' || mode === 'RNA') this.value = this.value.toUpperCase();
             if (this.value.length === 1 && i < count - 1) container.children[i + 1].focus();
         });
+        
         input.addEventListener('focus', function() { window.activeInput = this; });
         container.appendChild(input);
     }
 }
 
+// 가상 키보드 (한글)
 function initKeyboard() {
-    const layout = ['ㄱ','ㄴ','ㄷ','ㄹ','ㅁ','ㅂ','ㅅ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ','ㅏ','ㅑ','ㅓ','ㅕ','ㅗ','ㅛ','ㅜ','ㅠ','ㅡ','ㅣ','.','!','?','~'];
+    const layout = [
+        'ㄱ','ㄴ','ㄷ','ㄹ','ㅁ','ㅂ','ㅅ',
+        'ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ',
+        'ㅏ','ㅑ','ㅓ','ㅕ','ㅗ','ㅛ','ㅜ',
+        'ㅠ','ㅡ','ㅣ','.','!','?','~'
+    ];
     DOM.keyboard.innerHTML = '';
     layout.forEach(char => {
-        const btn = document.createElement('button'); btn.className = 'key-btn'; btn.innerText = char;
+        const btn = document.createElement('button');
+        btn.className = 'key-btn';
+        btn.innerText = char;
         btn.onclick = () => {
             if (window.activeInput && window.activeInput.dataset.mode === 'KR') {
                 window.activeInput.value = char;
@@ -701,32 +878,53 @@ function initKeyboard() {
 
 function showTranscriptionRule() {
     showPopup("🔬 전사 규칙", `
-        <b>DNA ➔ 전사된 RNA</b> 상보적 결합 규칙:<br><br>
-        <div style="background:#000; padding:15px; text-align:center; border:1px dashed var(--text-dim); line-height:1.8;">
-            <b style="color:var(--color-amber);">A</b> ➔ <b style="color:var(--color-blue);">U</b> &nbsp;&nbsp;|&nbsp;&nbsp; <b style="color:var(--color-amber);">T</b> ➔ <b style="color:var(--color-blue);">A</b><br>
-            <b style="color:var(--color-amber);">G</b> ➔ <b style="color:var(--color-blue);">C</b> &nbsp;&nbsp;|&nbsp;&nbsp; <b style="color:var(--color-amber);">C</b> ➔ <b style="color:var(--color-blue);">G</b>
+        <b>DNA 가닥 중 한 가닥(주형 가닥)</b>을 바탕으로 <b>전사된 RNA</b>가 만들어질 때의 규칙입니다.<br><br>
+        <div style="background:#000; padding:15px; text-align:center; border:1px dashed var(--text-dim); font-size:1.1rem; line-height:1.8;">
+            <b style="color:var(--color-amber);">A</b> (아데닌) &nbsp;➔&nbsp; <b style="color:var(--color-blue);">U</b> (유라실)<br>
+            <b style="color:var(--color-amber);">T</b> (타이민) &nbsp;➔&nbsp; <b style="color:var(--color-blue);">A</b> (아데닌)<br>
+            <b style="color:var(--color-amber);">G</b> (구아닌) &nbsp;➔&nbsp; <b style="color:var(--color-blue);">C</b> (사이토신)<br>
+            <b style="color:var(--color-amber);">C</b> (사이토신) &nbsp;➔&nbsp; <b style="color:var(--color-blue);">G</b> (구아닌)
         </div>
+        <br>※ RNA에는 T 대신 U가 사용됩니다.
     `);
 }
 
 function useHint() {
-    state.hintsUsed++; let cost = 0; let hintText = "";
-    if (state.hintsUsed % 3 === 1) { cost = 5; hintText = "T가 있으면 DNA 주형(전사 필요), U가 있으면 RNA 서열(바로 번역)."; }
-    else if (state.hintsUsed % 3 === 2) { cost = 10; hintText = "정답 첫 자모: '" + (typeof currentAnswer === 'string' ? currentAnswer[0] : "V / ㅅ") + "' 입니다."; }
-    else { cost = 20; hintText = "결정적 힌트 단어: " + (typeof currentAnswer === 'string' ? currentAnswer : "정답 유추형 문제입니다."); }
-    state.score -= cost; document.getElementById('hint-display').innerText = `[힌트] ${hintText}`;
+    state.hintsUsed++;
+    let cost = 0;
+    let hintText = "";
+    
+    if (state.hintsUsed % 3 === 1) { cost = 5; hintText = "방향성: 전사가 필요한지, 바로 코돈표를 볼지 T/U 유무를 확인하세요."; }
+    else if (state.hintsUsed % 3 === 2) { cost = 10; hintText = "정답 첫 글자: '" + (typeof currentAnswer === 'string' ? currentAnswer[0] : "V / ㅅ") + "' 입니다."; }
+    else { cost = 20; hintText = "결정적 단서: " + (typeof currentAnswer === 'string' ? currentAnswer : "정답은 백신(ㅅㅏㄹㅏㅁ)과 관련있습니다."); }
+    
+    state.score -= cost;
+    document.getElementById('hint-display').innerText = `[힌트 수신] ${hintText}`;
 }
 
+// 엔딩
 function showEnding() {
-    clearInterval(state.timerInterval); localStorage.removeItem('genomeX_save');
+    clearInterval(state.timerInterval);
+    localStorage.removeItem('genomeX_save');
     const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
-    if (elapsed < 600) state.score += 200;
+    
+    if (elapsed < 600) state.score += 200; // 10분 이내 보너스
+    
     document.getElementById('res-time').innerText = formatTime(elapsed);
     document.getElementById('res-hints').innerText = state.hintsUsed;
     document.getElementById('res-mistakes').innerText = state.mistakes;
     document.getElementById('res-score').innerText = Math.max(0, state.score);
+    
+    document.body.style.boxShadow = "none";
+    document.body.classList.remove('zombie-attack');
+    
     showScreen('ending-screen');
+    
+    document.querySelector('.dna-bg').style.background = `
+        radial-gradient(circle at 50% 50%, rgba(0,255,65,0.1) 0%, var(--bg-dark) 100%)
+    `;
 }
+
 </script>
 </body>
 </html>
